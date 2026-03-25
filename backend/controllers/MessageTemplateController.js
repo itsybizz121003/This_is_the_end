@@ -1,4 +1,4 @@
-import MessageTemplate from '../models/MessageTemplate.js';
+import MessageTemplate from '../models/ManageTemplateModel.js';
 
 
 export const addTemplate = async (req, res) => {

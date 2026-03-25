@@ -1,6 +1,6 @@
 import express from 'express';
 import { 
-  sendTemplateMessage, logIncomingMessage, getConversation, deleteMessage, deleteMessagesByContact 
+  sendTemplateMessage, logIncomingMessage, getConversation, 
 } from '../controllers/MessageController.js';
 
 const router = express.Router();

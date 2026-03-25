@@ -1,6 +1,6 @@
-import Message from '../models/Message.js';
-import Contact from '../models/Contact.js';
-import MessageTemplate from '../models/MessageTemplate.js';
+import Message from '../models/MessageModel.js';
+import Contact from '../models/ContactModel.js';
+import MessageTemplate from '../models/ManageTemplateModel.js';
 import axios from 'axios'; // for WhatsApp API calls
 
 // WhatsApp API credentials
