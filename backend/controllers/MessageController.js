@@ -210,7 +210,7 @@ export const sendTemplateMessage = async (req, res) => {
 
         let phoneNumber = contact.phone.replace(/\D/g, '');
         if (phoneNumber.length === 10 && !phoneNumber.startsWith('91')) {
-          phoneNumber = `91${phoneNumber}`;
+          phoneNumber = `${phoneNumber}`;
         }
 
         const payload = {

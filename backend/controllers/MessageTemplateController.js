@@ -3,7 +3,7 @@ import MessageTemplate from '../models/ManageTemplateModel.js';
 
 export const addTemplate = async (req, res) => {
   try {
-    const { name, language = 'en', body, approved = false } = req.body;
+    const { name, language = 'en_US', body, approved = false } = req.body;
 
     const existing = await MessageTemplate.findOne({ name });
     if (existing) return res.status(400).json({ message: 'Template already exists' });

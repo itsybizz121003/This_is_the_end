@@ -63,13 +63,7 @@ const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen
           />
         </div>
 
-        {/* AI Badge - Hidden on very small screens */}
-        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/15 border border-indigo-500/30 rounded-xl cursor-pointer hover:bg-indigo-500/20 transition-all">
-          <Sparkles size={13} className="text-indigo-400" />
-          <span className="text-xs font-semibold text-indigo-300">
-            AI Active
-          </span>
-        </div>
+       
 
         {/* Notifications */}
         <div className="relative">

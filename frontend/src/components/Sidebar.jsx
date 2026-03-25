@@ -39,11 +39,8 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
           </div>
           <div className={`${!isOpen && "lg:hidden"}`}>
             <p className="text-[15px] font-bold text-white tracking-tight leading-none">
-              WhatsApp AI
-            </p>
-            <p className="text-[10px] text-indigo-400 tracking-[1.5px] uppercase font-semibold mt-0.5">
-              Pro Suite
-            </p>
+Itsybizz Ai            </p>
+           
           </div>
         </div>
         
@@ -96,18 +93,7 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
           })}
         </ul>
 
-        {/* Status Card */}
-        <div className="mt-6 p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
-            <span className="text-xs font-semibold text-slate-200">
-              System Active
-            </span>
-          </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            All services running. WhatsApp instance connected.
-          </p>
-        </div>
+      
       </div>
 
       {/* Footer */}

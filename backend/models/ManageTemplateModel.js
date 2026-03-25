@@ -9,7 +9,7 @@ const messageTemplateSchema = new mongoose.Schema({
   },
   language: {
     type: String,
-    default: 'en', // e.g., 'en', 'hi'
+    default: 'en_US', // e.g., 'en', 'hi'
   },
   body: {
     type: String,
