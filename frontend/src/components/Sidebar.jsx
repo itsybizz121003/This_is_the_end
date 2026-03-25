@@ -21,8 +21,7 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
     },
     { icon: <Users size={18} />, label: "Contacts", id: "contacts" },
     { icon: <FileText size={18} />, label: "Templates", id: "templates" },
-    { icon: <Send size={18} />, label: "Campaigns", id: "campaigns" },
-    { icon: <MessageSquare size={18} />, label: "Messages", id: "messages" },
+    { icon: <Send size={18} />, label: "Broadcast Campaign", id: "campaigns" },
     { icon: <Settings size={18} />, label: "Settings", id: "settings" },
   ];
 

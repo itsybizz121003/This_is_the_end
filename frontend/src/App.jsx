@@ -3,9 +3,13 @@ import { getContacts } from './services/api'
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import Dashboard from './components/Dashboard'
+import ContactsPage from './components/ContactsPage'
+import TemplatesPage from './components/TemplatesPage'
+import CampaignsPage from './components/CampaignsPage'
 import './App.css'
 
 function App() {
+  const [activePage, setActivePage] = useState('dashboard')
   const [contacts, setContacts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -42,6 +46,34 @@ function App() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
 
+  const renderPage = () => {
+    switch (activePage) {
+      case 'dashboard':
+        return (
+          <Dashboard 
+            contacts={contacts} 
+            loading={loading} 
+            error={error} 
+            setActivePage={setActivePage}
+          />
+        )
+      case 'contacts':
+        return <ContactsPage />
+      case 'templates':
+        return <TemplatesPage />
+      case 'campaigns':
+        return <CampaignsPage />
+      default:
+        return (
+          <Dashboard 
+            contacts={contacts} 
+            loading={loading} 
+            error={error} 
+          />
+        )
+    }
+  }
+
   return (
     <div className="flex min-h-screen bg-[#07071a]">
       {/* Sidebar Overlay for Mobile */}
@@ -53,7 +85,12 @@ function App() {
       )}
 
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <Sidebar 
+        activePage={activePage} 
+        setActivePage={setActivePage} 
+        isOpen={isSidebarOpen} 
+        setIsOpen={setIsSidebarOpen} 
+      />
 
       {/* Main Content Area */}
       <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen && window.innerWidth >= 1024 ? 'ml-64' : 'ml-0'}`}>
@@ -62,11 +99,7 @@ function App() {
 
         {/* Dynamic Page Content */}
         <main className="flex-1">
-          <Dashboard 
-            contacts={contacts} 
-            loading={loading} 
-            error={error} 
-          />
+          {renderPage()}
         </main>
 
         {/* Footer */}

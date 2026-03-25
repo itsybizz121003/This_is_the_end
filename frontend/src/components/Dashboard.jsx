@@ -167,43 +167,43 @@ const StatCard = ({
 );
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
-const Dashboard = () => {
+const Dashboard = ({ contacts: apiContacts, loading, error, setActivePage }) => {
   const [activeTab, setActiveTab] = useState("week");
 
   const stats = [
     {
       title: "Total Contacts",
-      value: "12,489",
+      value: loading ? "..." : apiContacts?.length || 0,
       icon: <Users size={20} className="text-white" />,
       trend: "up",
-      trendValue: "+12%",
+      trendValue: "+0%",
       gradient: "from-indigo-500 to-violet-600",
       glow: "bg-indigo-500",
     },
     {
       title: "Messages Sent",
-      value: "84,201",
+      value: "0",
       icon: <MessageCircle size={20} className="text-white" />,
       trend: "up",
-      trendValue: "+8%",
+      trendValue: "+0%",
       gradient: "from-emerald-500 to-teal-600",
       glow: "bg-emerald-500",
     },
     {
       title: "Success Rate",
-      value: "98.5%",
+      value: "0%",
       icon: <CheckCircle size={20} className="text-white" />,
       trend: "up",
-      trendValue: "+2%",
+      trendValue: "+0%",
       gradient: "from-violet-500 to-purple-600",
       glow: "bg-violet-500",
     },
     {
       title: "Avg. Response",
-      value: "2.4m",
+      value: "0m",
       icon: <Clock size={20} className="text-white" />,
       trend: "down",
-      trendValue: "-5%",
+      trendValue: "-0%",
       gradient: "from-amber-500 to-orange-500",
       glow: "bg-amber-500",
     },
@@ -214,6 +214,24 @@ const Dashboard = () => {
     Pending: "bg-amber-500/15 text-amber-400",
     Failed: "bg-red-500/15 text-red-400",
   };
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+        <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center text-red-500 mb-4">
+          <Zap size={30} />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">Error Connecting Backend</h3>
+        <p className="text-slate-400 max-w-md">{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-500 transition-all"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -485,7 +503,10 @@ const Dashboard = () => {
                 Latest activity from your contacts
               </p>
             </div>
-            <button className="text-indigo-400 text-xs font-semibold hover:text-indigo-300 flex items-center gap-1 transition-colors">
+            <button 
+              onClick={() => setActivePage('contacts')}
+              className="text-indigo-400 text-xs font-semibold hover:text-indigo-300 flex items-center gap-1 transition-colors"
+            >
               <Eye size={13} /> View All
             </button>
           </div>
@@ -500,52 +521,60 @@ const Dashboard = () => {
                     Phone
                   </th>
                   <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
-                    Campaign
-                  </th>
-                  <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
-                    Sent
+                    Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-indigo-500/5">
-                {contacts.map((c) => (
-                  <tr
-                    key={c._id}
-                    className="hover:bg-white/[0.02] transition-colors group"
-                  >
-                    <td className="px-6 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500/30 to-violet-600/30 flex items-center justify-center text-indigo-300 text-xs font-bold">
-                          {c.name[0]}
-                        </div>
-                        <span className="text-sm font-medium text-slate-200">
-                          {c.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3.5 text-sm text-slate-500">
-                      {c.phone}
-                    </td>
-                    <td className="px-6 py-3.5">
-                      <span className="text-xs text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded-md font-medium">
-                        {c.campaign}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3.5">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${statusStyle[c.status]}`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3.5 text-xs text-slate-600">
-                      {c.sent}
+                {loading ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-8 text-center text-slate-500 text-sm">
+                      Contacts load ho rahe hain... (Loading contacts)
                     </td>
                   </tr>
-                ))}
+                ) : apiContacts?.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-8 text-center text-slate-500 text-sm">
+                      Koi contacts nahi mile. (No contacts found)
+                    </td>
+                  </tr>
+                ) : (
+                  apiContacts.slice(0, 5).map((c) => (
+                    <tr
+                      key={c._id}
+                      className="hover:bg-white/[0.02] transition-colors group"
+                    >
+                      <td className="px-6 py-3.5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500/30 to-violet-600/30 flex items-center justify-center text-indigo-300 text-xs font-bold">
+                            {c.name ? c.name[0] : "U"}
+                          </div>
+                          <span className="text-sm font-medium text-slate-200">
+                            {c.name || "Unknown"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-3.5 text-sm text-slate-500">
+                        {c.phone}
+                      </td>
+                      <td className="px-6 py-3.5">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${statusStyle[c.status] || "bg-slate-500/15 text-slate-400"}`}
+                        >
+                          {c.status || "Active"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3.5">
+                        <button className="text-slate-500 hover:text-indigo-400 transition-colors">
+                          <MoreHorizontal size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -625,28 +654,33 @@ const Dashboard = () => {
                   icon: <Send size={15} />,
                   gradient: "from-indigo-600 to-violet-600",
                   glow: "shadow-[0_0_20px_rgba(99,102,241,0.3)]",
+                  id: "campaigns",
                 },
                 {
                   label: "Add Contact",
                   icon: <Users size={15} />,
                   gradient: "from-emerald-600 to-teal-600",
                   glow: "shadow-[0_0_20px_rgba(16,185,129,0.3)]",
+                  id: "contacts",
                 },
                 {
                   label: "New Template",
                   icon: <Zap size={15} />,
                   gradient: "from-amber-500 to-orange-500",
                   glow: "shadow-[0_0_20px_rgba(245,158,11,0.3)]",
+                  id: "templates",
                 },
                 {
                   label: "View Reports",
                   icon: <TrendingUp size={15} />,
                   gradient: "from-violet-600 to-purple-600",
                   glow: "shadow-[0_0_20px_rgba(139,92,246,0.3)]",
+                  id: "dashboard",
                 },
               ].map((a, i) => (
                 <button
                   key={i}
+                  onClick={() => setActivePage(a.id)}
                   className={`flex flex-col items-center gap-2 p-3.5 bg-gradient-to-br ${a.gradient} rounded-xl ${a.glow} hover:scale-105 transition-all duration-200 text-white`}
                 >
                   {a.icon}
