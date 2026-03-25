@@ -11,6 +11,10 @@ const CampaignsPage = () => {
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [campaignStats, setCampaignStats] = useState({
+  totalSent: 0,
+  totalFailed: 0,
+});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +69,14 @@ const CampaignsPage = () => {
           message: `Campaign successful! Sent to ${res.data.totalSent} contacts.`,
           details: res.data
         });
+        setCampaignStats(prev => ({
+  totalSent: prev.totalSent + res.data.totalSent,
+  totalFailed: prev.totalFailed + res.data.totalFailed
+}));
+localStorage.setItem("campaignStats", JSON.stringify({
+  totalSent: res.data.totalSent,
+  totalFailed: res.data.totalFailed
+}));
         setSelectedContacts([]);
         setSelectedTemplate('');
       } else {

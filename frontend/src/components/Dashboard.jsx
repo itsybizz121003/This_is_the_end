@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Users,
   MessageCircle,
@@ -102,6 +102,8 @@ const contacts = [
   },
 ];
 
+
+
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -169,46 +171,100 @@ const StatCard = ({
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 const Dashboard = ({ contacts: apiContacts, loading, error, setActivePage }) => {
   const [activeTab, setActiveTab] = useState("week");
+  
+  const [campaignStats, setCampaignStats] = useState({
+    totalSent: 0,
+    totalFailed: 0,
+  });
 
-  const stats = [
-    {
-      title: "Total Contacts",
-      value: loading ? "..." : apiContacts?.length || 0,
-      icon: <Users size={20} className="text-white" />,
-      trend: "up",
-      trendValue: "+0%",
-      gradient: "from-indigo-500 to-violet-600",
-      glow: "bg-indigo-500",
-    },
-    {
-      title: "Messages Sent",
-      value: "0",
-      icon: <MessageCircle size={20} className="text-white" />,
-      trend: "up",
-      trendValue: "+0%",
-      gradient: "from-emerald-500 to-teal-600",
-      glow: "bg-emerald-500",
-    },
-    {
-      title: "Success Rate",
-      value: "0%",
-      icon: <CheckCircle size={20} className="text-white" />,
-      trend: "up",
-      trendValue: "+0%",
-      gradient: "from-violet-500 to-purple-600",
-      glow: "bg-violet-500",
-    },
-    {
-      title: "Avg. Response",
-      value: "0m",
-      icon: <Clock size={20} className="text-white" />,
-      trend: "down",
-      trendValue: "-0%",
-      gradient: "from-amber-500 to-orange-500",
-      glow: "bg-amber-500",
-    },
-  ];
+  useEffect(() => {
+  const data = JSON.parse(localStorage.getItem("campaignStats"));
+  if (data) {
+    setCampaignStats(data);
+  }
+}, []);
 
+const total = campaignStats.totalSent + campaignStats.totalFailed;
+
+const successRate = total > 0
+  ? ((campaignStats.totalSent / total) * 100).toFixed(1)
+  : 0;
+  // const stats = [
+  //   {
+  //     title: "Total Contacts",
+  //     value: loading ? "..." : apiContacts?.length || 0,
+  //     icon: <Users size={20} className="text-white" />,
+  //     trend: "up",
+  //     trendValue: "+0%",
+  //     gradient: "from-indigo-500 to-violet-600",
+  //     glow: "bg-indigo-500",
+  //   },
+  //   {
+  //     title: "Messages Sent",
+  //     value: "0",
+  //     icon: <MessageCircle size={20} className="text-white" />,
+  //     trend: "up",
+  //     trendValue: "+0%",
+  //     gradient: "from-emerald-500 to-teal-600",
+  //     glow: "bg-emerald-500",
+  //   },
+  //   {
+  //     title: "Success Rate",
+  //     value: "0%",
+  //     icon: <CheckCircle size={20} className="text-white" />,
+  //     trend: "up",
+  //     trendValue: "+0%",
+  //     gradient: "from-violet-500 to-purple-600",
+  //     glow: "bg-violet-500",
+  //   },
+  //   {
+  //     title: "Avg. Response",
+  //     value: "0m",
+  //     icon: <Clock size={20} className="text-white" />,
+  //     trend: "down",
+  //     trendValue: "-0%",
+  //     gradient: "from-amber-500 to-orange-500",
+  //     glow: "bg-amber-500",
+  //   },
+  // ];
+const stats = [
+  {
+    title: "Total Contacts",
+    value: loading ? "..." : apiContacts?.length || 0,
+    icon: <Users size={20} className="text-white" />,
+    trend: "up",
+    trendValue: "+0%",
+    gradient: "from-indigo-500 to-violet-600",
+    glow: "bg-indigo-500",
+  },
+  {
+    title: "Messages Sent",
+    value: campaignStats.totalSent,
+    icon: <MessageCircle size={20} className="text-white" />,
+    trend: "up",
+    trendValue: "+0%",
+    gradient: "from-emerald-500 to-teal-600",
+    glow: "bg-emerald-500",
+  },
+  {
+    title: "Success Rate",
+    value: `${successRate}%`,
+    icon: <CheckCircle size={20} className="text-white" />,
+    trend: "up",
+    trendValue: "+0%",
+    gradient: "from-violet-500 to-purple-600",
+    glow: "bg-violet-500",
+  },
+  {
+    title: "Avg. Response",
+    value: "0m",
+    icon: <Clock size={20} className="text-white" />,
+    trend: "down",
+    trendValue: "-0%",
+    gradient: "from-amber-500 to-orange-500",
+    glow: "bg-amber-500",
+  },
+];
   const statusStyle = {
     Active: "bg-emerald-500/15 text-emerald-400",
     Pending: "bg-amber-500/15 text-amber-400",
