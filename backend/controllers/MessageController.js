@@ -11,34 +11,37 @@ const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 export const sendTemplateMessage = async (req, res) => {
   try {
     const { contactId, templateName } = req.body;
-
+    
     // Fetch contact
     const contact = await Contact.findById(contactId);
     if (!contact || !contact.optIn)
       return res.status(400).json({ message: 'Contact not found or not opted-in' });
-
+  console.log("contact", contact);
     // Fetch template
     const template = await MessageTemplate.findOne({ name: templateName, approved: true });
     if (!template) return res.status(400).json({ message: 'Template not found or not approved' });
 
-    // WhatsApp API payload
-    const payload = {
-      messaging_product: 'whatsapp',
-      to: contact.phone,
-      type: 'template',
-      template: {
-        name: template.name,
-        language: { code: template.language },
-        components: [
-          {
-            type: 'body',
-            parameters: [
-              { type: 'text', text: contact.name } // simple placeholder replacement
-            ],
+  
+   
+
+        const payload = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: `91${contact.phone}`,
+          type: "template",
+          template: {
+            name: templateName,
+            language: {
+              code: "en_US",
+            },
+            // components: [
+            //   {
+            //     type: "body",
+            //     parameters: components,
+            //   },
+            // ],
           },
-        ],
-      },
-    };
+        };
 
     // Send via WhatsApp API
     const response = await axios.post(WHATSAPP_API_URL, payload, {
@@ -47,7 +50,7 @@ export const sendTemplateMessage = async (req, res) => {
         'Content-Type': 'application/json',
       },
     });
-
+//  console.log("response", response);
     // Log message in DB
     const message = new Message({
       contact: contact._id,
