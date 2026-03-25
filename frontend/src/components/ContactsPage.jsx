@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { getContacts, addContact, deleteContact } from '../services/api';
-import { Users, Plus, Trash2, Search, MoreHorizontal } from 'lucide-react';
+import { getContacts, addContact, deleteContact, updateContact } from '../services/api';
+import { Users, Plus, Trash2, Search, Edit2, X } from 'lucide-react';
 
 const ContactsPage = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [newContact, setNewContact] = useState({ name: '', phone: '' });
+  const [editingContact, setEditingContact] = useState(null);
 
   const fetchContacts = async () => {
     try {
@@ -35,6 +37,27 @@ const ContactsPage = () => {
     } catch (err) {
       console.error('Error adding contact:', err);
       alert('Contact add karne mein error aaya.');
+    }
+  };
+
+  const handleEditContact = (contact) => {
+    setEditingContact({ ...contact });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateContact = async (e) => {
+    e.preventDefault();
+    try {
+      await updateContact(editingContact._id, {
+        name: editingContact.name,
+        phone: editingContact.phone
+      });
+      setShowEditModal(false);
+      setEditingContact(null);
+      fetchContacts();
+    } catch (err) {
+      console.error('Error updating contact:', err);
+      alert('Contact update karne mein error aaya.');
     }
   };
 
@@ -138,14 +161,18 @@ const ContactsPage = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
+                          onClick={() => handleEditContact(contact)}
+                          className="p-2 text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-all"
+                          title="Edit"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button 
                           onClick={() => handleDeleteContact(contact._id)}
                           className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
                           title="Delete"
                         >
                           <Trash2 size={16} />
-                        </button>
-                        <button className="p-2 text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-all">
-                          <MoreHorizontal size={16} />
                         </button>
                       </div>
                     </td>
@@ -201,6 +228,59 @@ const ContactsPage = () => {
                   className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all shadow-lg"
                 >
                   Save Contact
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Contact Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-[#0d0d2b] border border-indigo-500/20 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="px-6 py-4 border-b border-indigo-500/10 flex items-center justify-between">
+              <h3 className="font-bold text-lg">Edit Contact</h3>
+              <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-white transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateContact} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Full Name</label>
+                <input 
+                  required
+                  type="text"
+                  placeholder="e.g. Rahul Kumar"
+                  className="w-full bg-white/5 border border-indigo-500/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-indigo-500/30 transition-all text-white"
+                  value={editingContact.name}
+                  onChange={(e) => setEditingContact({...editingContact, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Phone Number</label>
+                <input 
+                  required
+                  type="text"
+                  placeholder="e.g. +919876543210"
+                  className="w-full bg-white/5 border border-indigo-500/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-indigo-500/30 transition-all text-white font-mono"
+                  value={editingContact.phone}
+                  onChange={(e) => setEditingContact({...editingContact, phone: e.target.value})}
+                />
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all shadow-lg"
+                >
+                  Update Contact
                 </button>
               </div>
             </form>
