@@ -1,29 +1,28 @@
-const express = require("express");
-const cors = require("cors");
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import connectDB from './config/db.js';
+
+import contactRoutes from './routes/ContactRoutes.js';
+import messageTemplateRoutes from './routes/MessageTemplateRoutes.js';
+import messageRoutes from './routes/MessageRoutes.js';
+
+dotenv.config();
 
 const app = express();
-const Port = 5000;
 
-// Middleware
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-  }),
-);
+// Connect MongoDB
+connectDB();
 
+app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get("/", (req, res) => {
-  res.send("Backend is running ");
-});
+app.use('/api/contacts', contactRoutes);
+app.use('/api/templates', messageTemplateRoutes);
+app.use('/api/messages', messageRoutes);
 
-// Example API route
-app.get("/api/data", (req, res) => {
-  res.json({ message: "Hello from backend!" });
-});
+app.get('/', (req, res) => res.send('WhatsApp Automation Backend Running'));
 
-// Server start
-app.listen(Port, () => {
-  console.log(`Server running on http://localhost:${Port}`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
