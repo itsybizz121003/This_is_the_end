@@ -107,7 +107,7 @@ function App() {
 
         {/* Footer */}
         <footer className="py-4 px-8 text-center text-sm text-gray-500 border-t border-indigo-500/10 bg-[#07071a]">
-          &copy; {new Date().getFullYear()} WhatsApp AI Automation. All rights reserved.
+          &copy; {new Date().getFullYear()} Itsybizz Ai Automation. All rights reserved.
         </footer>
       </div>
     </div>
