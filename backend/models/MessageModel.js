@@ -22,9 +22,12 @@ const messageSchema = new mongoose.Schema({
     required: true,
   },
   status: {
+  type: String,
+  enum: ['sent', 'delivered', 'failed', 'read', 'received'], // 👈 add this
+  default: 'sent',
+},
+  whatsappMessageId: {
     type: String,
-    enum: ['sent', 'delivered', 'failed', 'read'],
-    default: 'sent',
   },
   timestamp: {
     type: Date,

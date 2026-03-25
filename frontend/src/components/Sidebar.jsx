@@ -20,9 +20,10 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
       id: "dashboard",
     },
     { icon: <Users size={18} />, label: "Contacts", id: "contacts" },
+    { icon: <MessageSquare size={18} />, label: "Chat", id: "chat" },
     { icon: <FileText size={18} />, label: "Templates", id: "templates" },
     { icon: <Send size={18} />, label: "Broadcast Campaign", id: "campaigns" },
-    { icon: <Settings size={18} />, label: "Settings", id: "settings" },
+    // { icon: <Settings size={18} />, label: "Settings", id: "settings" },
   ];
 
   return (

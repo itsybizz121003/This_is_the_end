@@ -19,5 +19,7 @@ export const deleteTemplate = (id) => API.delete(`/templates/${id}`);
 // Message APIs
 export const sendBroadcast = (data) => API.post('/messages/send', data);
 export const getConversation = (contactId) => API.get(`/messages/${contactId}`);
+export const getMessages = () => API.get('/messages');
+export const sendMessage = (data) => API.post('/messages/send-message', data);
 
 export default API;
