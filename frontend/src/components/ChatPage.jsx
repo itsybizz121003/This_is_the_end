@@ -113,17 +113,23 @@ const ChatPage = () => {
             <span className="text-white font-medium">My Chat</span>
           </div>
           <div className="flex gap-4 text-slate-400">
-            <Smile size={20} className="cursor-pointer hover:text-white" />
-            <MoreVertical size={20} className="cursor-pointer hover:text-white" />
+            {/* <Smile size={20} className="cursor-pointer hover:text-white" /> */}
+            <MoreVertical
+              size={20}
+              className="cursor-pointer hover:text-white"
+            />
           </div>
         </div>
 
         {/* Search */}
         <div className="p-3">
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
-            <input 
-              type="text" 
+            <Search
+              className="absolute left-3 top-2.5 text-slate-500"
+              size={18}
+            />
+            <input
+              type="text"
               placeholder="Search or start new chat"
               className="w-full bg-[#1a1a3a] text-slate-200 pl-10 pr-4 py-2 rounded-xl text-sm border border-white/5 focus:outline-none focus:border-indigo-500/50"
               value={searchQuery}
@@ -139,18 +145,22 @@ const ChatPage = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
             </div>
           ) : (
-            filteredContacts.map(contact => (
-              <div 
+            filteredContacts.map((contact) => (
+              <div
                 key={contact._id}
                 onClick={() => setSelectedContact(contact)}
-                className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-white/5 transition-colors ${selectedContact?._id === contact._id ? 'bg-indigo-500/10' : ''}`}
+                className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-white/5 transition-colors ${selectedContact?._id === contact._id ? "bg-indigo-500/10" : ""}`}
               >
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                  <span className="text-indigo-400 font-bold">{contact.name.charAt(0).toUpperCase()}</span>
+                  <span className="text-indigo-400 font-bold">
+                    {contact.name.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline">
-                    <h3 className="text-slate-200 font-medium truncate">{contact.name}</h3>
+                    <h3 className="text-slate-200 font-medium truncate">
+                      {contact.name}
+                    </h3>
                     <span className="text-[10px] text-slate-500 uppercase tracking-wider">
                       {contact.phone}
                     </span>
@@ -173,47 +183,55 @@ const ChatPage = () => {
             <div className="p-4 bg-[#1a1a3a] border-b border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center">
-                  <span className="text-indigo-400 font-bold">{selectedContact.name.charAt(0).toUpperCase()}</span>
+                  <span className="text-indigo-400 font-bold">
+                    {selectedContact.name.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <div>
-                  <h3 className="text-white font-medium">{selectedContact.name}</h3>
-                  <span className="text-xs text-indigo-400">{selectedContact.phone}</span>
+                  <h3 className="text-white font-medium">
+                    {selectedContact.name}
+                  </h3>
+                  <span className="text-xs text-indigo-400">
+                    {selectedContact.phone}
+                  </span>
                 </div>
               </div>
-              <div className="flex gap-5 text-slate-400">
-                <Video size={20} className="cursor-pointer hover:text-white" />
-                <Phone size={20} className="cursor-pointer hover:text-white" />
-                <Search size={20} className="cursor-pointer hover:text-white" />
-                <MoreVertical size={20} className="cursor-pointer hover:text-white" />
-              </div>
+             
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-5">
+            <div
+              className="flex-1 overflow-y-auto p-6 space-y-4 
+  bg-[url('https://wallpapers.com/images/featured/dark-mode-nuyvgvwzb8ztc2zu.jpg')] 
+  bg-[length:100%] bg-no-repeat bg-center"
+            >
               {messages.map((msg, idx) => (
-                <div 
+                <div
                   key={msg._id || idx}
-                  className={`flex ${msg.direction === 'outgoing' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${msg.direction === "outgoing" ? "justify-end" : "justify-start"}`}
                 >
-                  <div 
+                  <div
                     className={`max-w-[70%] p-3 rounded-2xl shadow-lg relative group ${
-                      msg.direction === 'outgoing' 
-                        ? 'bg-indigo-600 text-white rounded-tr-none' 
-                        : 'bg-[#1a1a3a] text-slate-200 rounded-tl-none border border-white/5'
+                      msg.direction === "outgoing"
+                        ? "bg-indigo-600 text-white rounded-tr-none"
+                        : "bg-[#1a1a3a] text-slate-200 rounded-tl-none border border-white/5"
                     }`}
                   >
                     <p className="text-sm leading-relaxed">{msg.body}</p>
                     <div className="flex items-center justify-end gap-1.5 mt-1 opacity-70">
                       <span className="text-[10px]">
-                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(msg.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </span>
-                      {msg.direction === 'outgoing' && (
+                      {msg.direction === "outgoing" && (
                         <span>
-                          {msg.status === 'read' ? (
+                          {msg.status === "read" ? (
                             <CheckCheck size={14} className="text-blue-300" />
-                          ) : msg.status === 'delivered' ? (
+                          ) : msg.status === "delivered" ? (
                             <CheckCheck size={14} />
-                          ) : msg.status === 'sent' ? (
+                          ) : msg.status === "sent" ? (
                             <Check size={14} />
                           ) : (
                             <Clock size={12} />
@@ -228,20 +246,29 @@ const ChatPage = () => {
             </div>
 
             {/* Input Area */}
-            <form onSubmit={handleSendMessage} className="p-4 bg-[#1a1a3a] border-t border-white/5 flex items-center gap-4">
-              <Smile size={24} className="text-slate-400 cursor-pointer hover:text-white" />
-              <Paperclip size={24} className="text-slate-400 cursor-pointer hover:text-white" />
-              <input 
-                type="text" 
+            <form
+              onSubmit={handleSendMessage}
+              className="p-4 bg-[#1a1a3a] border-t border-white/5 flex items-center gap-4"
+            >
+              {/* <Smile
+                size={24}
+                className="text-slate-400 cursor-pointer hover:text-white"
+              />
+              <Paperclip
+                size={24}
+                className="text-slate-400 cursor-pointer hover:text-white"
+              /> */}
+              <input
+                type="text"
                 placeholder="Type a message"
                 className="flex-1 bg-[#0d0d2b] text-slate-200 px-4 py-3 rounded-xl text-sm border border-white/5 focus:outline-none focus:border-indigo-500/50"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
               />
-              <button 
+              <button
                 type="submit"
                 disabled={!newMessage.trim()}
-                className={`p-3 rounded-xl bg-indigo-500 text-white transition-all ${!newMessage.trim() ? 'opacity-50' : 'hover:bg-indigo-600 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/20'}`}
+                className={`p-3 rounded-xl bg-indigo-500 text-white transition-all ${!newMessage.trim() ? "opacity-50" : "hover:bg-indigo-600 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/20"}`}
               >
                 <Send size={20} />
               </button>
@@ -252,9 +279,12 @@ const ChatPage = () => {
             <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
               <MessageSquare size={48} className="text-indigo-500" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">WhatsApp Web AI</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              WhatsApp Web AI
+            </h2>
             <p className="text-slate-400 max-w-md">
-              Select a contact to start messaging. Your messages are synchronized with WhatsApp in real-time.
+              Select a contact to start messaging. Your messages are
+              synchronized with WhatsApp in real-time.
             </p>
             <div className="mt-12 flex items-center gap-2 text-slate-600 text-sm">
               <Clock size={14} />
