@@ -9,9 +9,10 @@ import {
   Send,
   Zap,
   ChevronRight,
+  X,
 } from "lucide-react";
 
-const Sidebar = ({ activePage, setActivePage }) => {
+const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
   const menuItems = [
     {
       icon: <LayoutDashboard size={18} />,
@@ -26,20 +27,33 @@ const Sidebar = ({ activePage, setActivePage }) => {
   ];
 
   return (
-    <aside className="w-64 bg-gradient-to-b from-[#07071a] via-[#0d0d2b] to-[#07071a] h-screen fixed left-0 top-0 flex flex-col border-r border-indigo-500/10 z-50">
-      {/* Logo */}
-      <div className="h-[70px] flex items-center px-6 border-b border-indigo-500/10 gap-3">
-        <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] shrink-0">
-          <Zap size={17} className="text-white fill-white" />
+    <aside
+      className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-[#07071a] via-[#0d0d2b] to-[#07071a] flex flex-col border-r border-indigo-500/10 z-50 transition-all duration-300 ease-in-out
+      ${isOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:translate-x-0 lg:w-0 lg:opacity-0 overflow-hidden"}`}
+    >
+      {/* Logo & Close Button */}
+      <div className="h-[70px] flex items-center justify-between px-6 border-b border-indigo-500/10 gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] shrink-0">
+            <Zap size={17} className="text-white fill-white" />
+          </div>
+          <div className={`${!isOpen && "lg:hidden"}`}>
+            <p className="text-[15px] font-bold text-white tracking-tight leading-none">
+              WhatsApp AI
+            </p>
+            <p className="text-[10px] text-indigo-400 tracking-[1.5px] uppercase font-semibold mt-0.5">
+              Pro Suite
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-[15px] font-bold text-white tracking-tight leading-none">
-            WhatsApp AI
-          </p>
-          <p className="text-[10px] text-indigo-400 tracking-[1.5px] uppercase font-semibold mt-0.5">
-            Pro Suite
-          </p>
-        </div>
+        
+        {/* Close Button - Only Mobile */}
+        <button 
+          onClick={() => setIsOpen(false)}
+          className="lg:hidden p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+        >
+          <X size={18} />
+        </button>
       </div>
 
       {/* Nav */}

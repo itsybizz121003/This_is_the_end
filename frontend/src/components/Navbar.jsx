@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Bell, Search, ChevronDown, Sparkles } from "lucide-react";
+import { Bell, Search, ChevronDown, Sparkles, Menu } from "lucide-react";
 
-const Navbar = ({ pageTitle = "Dashboard Overview" }) => {
+const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen }) => {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const notifications = [
@@ -23,26 +23,35 @@ const Navbar = ({ pageTitle = "Dashboard Overview" }) => {
   ];
 
   return (
-    <nav className="h-[70px] bg-[#07071a]/80 backdrop-blur-xl border-b border-indigo-500/10 flex items-center justify-between px-8 sticky top-0 z-40">
-      {/* Left - Page Title */}
-      <div>
-        <h2 className="text-white font-bold text-lg tracking-tight leading-none">
-          {pageTitle}
-        </h2>
-        <p className="text-slate-500 text-xs mt-0.5">
-          {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
+    <nav className="h-[70px] bg-[#07071a]/80 backdrop-blur-xl border-b border-indigo-500/10 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40">
+      {/* Left - Toggle & Page Title */}
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+        >
+          <Menu size={20} />
+        </button>
+        
+        <div className="hidden xs:block">
+          <h2 className="text-white font-bold text-lg tracking-tight leading-none">
+            {pageTitle}
+          </h2>
+          <p className="text-slate-500 text-[10px] sm:text-xs mt-0.5">
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        </div>
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-3">
-        {/* Search */}
-        <div className="relative">
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Search - Hidden on mobile, shown on md+ */}
+        <div className="relative hidden md:block">
           <Search
             size={15}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
@@ -50,12 +59,12 @@ const Navbar = ({ pageTitle = "Dashboard Overview" }) => {
           <input
             type="text"
             placeholder="Search anything..."
-            className="w-56 pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/8 transition-all"
+            className="w-40 lg:w-56 pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/8 transition-all"
           />
         </div>
 
-        {/* AI Badge */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/15 border border-indigo-500/30 rounded-xl cursor-pointer hover:bg-indigo-500/20 transition-all">
+        {/* AI Badge - Hidden on very small screens */}
+        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/15 border border-indigo-500/30 rounded-xl cursor-pointer hover:bg-indigo-500/20 transition-all">
           <Sparkles size={13} className="text-indigo-400" />
           <span className="text-xs font-semibold text-indigo-300">
             AI Active
@@ -73,7 +82,7 @@ const Navbar = ({ pageTitle = "Dashboard Overview" }) => {
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-[#0d0d2b] border border-indigo-500/20 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
+            <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-[#0d0d2b] border border-indigo-500/20 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
               <div className="px-4 py-3 border-b border-indigo-500/10 flex justify-between items-center">
                 <span className="text-sm font-semibold text-slate-200">
                   Notifications
@@ -107,17 +116,17 @@ const Navbar = ({ pageTitle = "Dashboard Overview" }) => {
         </div>
 
         {/* Profile */}
-        <button className="flex items-center gap-2.5 pl-3 border-l border-white/10">
+        <button className="flex items-center gap-2 sm:gap-2.5 sm:pl-3 sm:border-l sm:border-white/10">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shadow-[0_0_12px_rgba(99,102,241,0.3)]">
             A
           </div>
-          <div className="text-left hidden sm:block">
+          <div className="text-left hidden lg:block">
             <p className="text-xs font-semibold text-slate-200 leading-none">
               Admin
             </p>
             <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
           </div>
-          <ChevronDown size={14} className="text-slate-500" />
+          <ChevronDown size={14} className="text-slate-500 hidden sm:block" />
         </button>
       </div>
     </nav>

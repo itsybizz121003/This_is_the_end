@@ -9,6 +9,20 @@ function App() {
   const [contacts, setContacts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -26,15 +40,25 @@ function App() {
     fetchContacts()
   }, [])
 
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#07071a]">
+      {/* Sidebar Overlay for Mobile */}
+      {isSidebarOpen && window.innerWidth < 1024 && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] transition-opacity duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content Area */}
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
+      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen && window.innerWidth >= 1024 ? 'ml-64' : 'ml-0'}`}>
         {/* Top Navbar */}
-        <Navbar />
+        <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
         {/* Dynamic Page Content */}
         <main className="flex-1">
@@ -46,7 +70,7 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className="py-4 px-8 text-center text-sm text-gray-400 border-t border-gray-100 bg-white">
+        <footer className="py-4 px-8 text-center text-sm text-gray-500 border-t border-indigo-500/10 bg-[#07071a]">
           &copy; {new Date().getFullYear()} WhatsApp AI Automation. All rights reserved.
         </footer>
       </div>
