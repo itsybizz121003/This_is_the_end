@@ -114,7 +114,7 @@ const ChatPage = () => {
             <span className="text-white font-medium">My Chat</span>
           </div>
           <div className="flex gap-4 text-slate-400">
-            <Smile size={20} className="cursor-pointer hover:text-white" />
+            {/* <Smile size={20} className="cursor-pointer hover:text-white" /> */}
             <MoreVertical
               size={20}
               className="cursor-pointer hover:text-white"
@@ -197,15 +197,7 @@ const ChatPage = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex gap-5 text-slate-400">
-                <Video size={20} className="cursor-pointer hover:text-white" />
-                <Phone size={20} className="cursor-pointer hover:text-white" />
-                <Search size={20} className="cursor-pointer hover:text-white" />
-                <MoreVertical
-                  size={20}
-                  className="cursor-pointer hover:text-white"
-                />
-              </div>
+             
             </div>
 
             {/* Messages Area */}
@@ -259,14 +251,14 @@ const ChatPage = () => {
               onSubmit={handleSendMessage}
               className="p-4 bg-[#1a1a3a] border-t border-white/5 flex items-center gap-4"
             >
-              <Smile
+              {/* <Smile
                 size={24}
                 className="text-slate-400 cursor-pointer hover:text-white"
               />
               <Paperclip
                 size={24}
                 className="text-slate-400 cursor-pointer hover:text-white"
-              />
+              /> */}
               <input
                 type="text"
                 placeholder="Type a message"
