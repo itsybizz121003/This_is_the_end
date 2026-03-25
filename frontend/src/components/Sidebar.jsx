@@ -1,4 +1,5 @@
 import React from "react";
+import { useNotifications } from "../context/NotificationContext";
 import {
   LayoutDashboard,
   Users,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 
 const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
+  const { unreadCount } = useNotifications();
   const menuItems = [
     {
       icon: <LayoutDashboard size={18} />,
@@ -20,7 +22,12 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
       id: "dashboard",
     },
     { icon: <Users size={18} />, label: "Contacts", id: "contacts" },
-    { icon: <MessageSquare size={18} />, label: "Chat", id: "chat" },
+    { 
+      icon: <MessageSquare size={18} />, 
+      label: "Chat", 
+      id: "chat",
+      showDot: unreadCount > 0 
+    },
     { icon: <FileText size={18} />, label: "Templates", id: "templates" },
     { icon: <Send size={18} />, label: "Broadcast Campaign", id: "campaigns" },
     // { icon: <Settings size={18} />, label: "Settings", id: "settings" },
@@ -39,7 +46,7 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
           </div>
           <div className={`${!isOpen && "lg:hidden"}`}>
             <p className="text-[15px] font-bold text-white tracking-tight leading-none">
-Itsybizz Ai            </p>
+ITSYBIZZ AI            </p>
            
           </div>
         </div>
@@ -55,9 +62,7 @@ Itsybizz Ai            </p>
 
       {/* Nav */}
       <div className="flex-1 overflow-y-auto py-5 px-3">
-        <p className="text-[10px] text-slate-600 tracking-[1.5px] uppercase font-semibold px-3 mb-3">
-          Navigation
-        </p>
+        
         <ul className="flex flex-col gap-1">
           {menuItems.map((item) => {
             const isActive = activePage === item.id;
@@ -83,6 +88,9 @@ Itsybizz Ai            </p>
                     >
                       {item.label}
                     </span>
+                    {item.showDot && (
+                      <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-blink" />
+                    )}
                   </div>
                   {isActive && (
                     <ChevronRight size={14} className="text-indigo-500" />

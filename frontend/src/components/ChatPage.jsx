@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
 import { getContacts, getConversation, sendMessage } from '../services/api';
+import { useNotifications } from '../context/NotificationContext';
 import { 
   Search, 
   MoreVertical, 
@@ -16,8 +16,6 @@ import {
   MessageSquare
 } from 'lucide-react';
 
-const socket = io(import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000');
-
 const ChatPage = () => {
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -26,6 +24,7 @@ const ChatPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
+  const { socket } = useNotifications();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

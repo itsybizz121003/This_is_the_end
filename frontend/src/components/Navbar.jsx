@@ -1,26 +1,17 @@
 import React, { useState } from "react";
 import { Bell, Search, ChevronDown, Sparkles, Menu } from "lucide-react";
+import { useNotifications } from "../context/NotificationContext";
 
 const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen }) => {
   const [notifOpen, setNotifOpen] = useState(false);
+  const { notifications, unreadCount, markAllAsRead, clearNotifications } = useNotifications();
 
-  const notifications = [
-    {
-      text: 'Campaign "Summer Sale" sent successfully',
-      time: "2m ago",
-      dot: "bg-emerald-400",
-    },
-    {
-      text: "3 new contacts added via import",
-      time: "15m ago",
-      dot: "bg-indigo-400",
-    },
-    {
-      text: "WhatsApp instance reconnected",
-      time: "1h ago",
-      dot: "bg-amber-400",
-    },
-  ];
+  const handleToggleNotif = () => {
+    setNotifOpen(!notifOpen);
+    if (!notifOpen) {
+      markAllAsRead();
+    }
+  };
 
   return (
     <nav className="h-[70px] bg-[#07071a]/80 backdrop-blur-xl border-b border-indigo-500/10 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40">
@@ -50,29 +41,25 @@ const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen
 
       {/* Right */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Search - Hidden on mobile, shown on md+ */}
-        <div className="relative hidden md:block">
-          <Search
-            size={15}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
-          />
-          <input
-            type="text"
-            placeholder="Search anything..."
-            className="w-40 lg:w-56 pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/8 transition-all"
-          />
-        </div>
-
+       
+       
        
 
         {/* Notifications */}
         <div className="relative">
           <button
-            onClick={() => setNotifOpen(!notifOpen)}
-            className="relative w-9 h-9 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:border-indigo-500/30 transition-all"
+            onClick={handleToggleNotif}
+            className="relative w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:border-indigo-500/30 transition-all group"
           >
-            <Bell size={17} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full shadow-[0_0_6px_rgba(99,102,241,0.8)]" />
+            <Bell size={18} className={unreadCount > 0 ? "text-indigo-400" : ""} />
+            {unreadCount > 0 && (
+              <>
+                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,1)] animate-blink" />
+                <span className="absolute -top-1 -right-1 bg-indigo-600 text-[9px] text-white font-bold px-1.5 py-0.5 rounded-full border border-[#07071a]">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              </>
+            )}
           </button>
 
           {notifOpen && (
@@ -81,29 +68,38 @@ const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen
                 <span className="text-sm font-semibold text-slate-200">
                   Notifications
                 </span>
-                <span className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300">
-                  Mark all read
+                <span 
+                  onClick={clearNotifications}
+                  className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300"
+                >
+                  Clear all
                 </span>
               </div>
-              <div className="divide-y divide-indigo-500/10">
-                {notifications.map((n, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-3 px-4 py-3 hover:bg-white/5 transition-all cursor-pointer"
-                  >
-                    <span
-                      className={`w-2 h-2 rounded-full ${n.dot} mt-1.5 shrink-0`}
-                    />
-                    <div>
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        {n.text}
-                      </p>
-                      <p className="text-[11px] text-slate-600 mt-1">
-                        {n.time}
-                      </p>
+              <div className="divide-y divide-indigo-500/10 max-h-96 overflow-y-auto">
+                {notifications.length > 0 ? (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className="flex items-start gap-3 px-4 py-3 hover:bg-white/5 transition-all cursor-pointer"
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full ${n.dot} mt-1.5 shrink-0`}
+                      />
+                      <div>
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                          {n.text}
+                        </p>
+                        <p className="text-[11px] text-slate-600 mt-1">
+                          {n.time}
+                        </p>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-8 text-center">
+                    <p className="text-xs text-slate-500">No new notifications</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}
@@ -120,7 +116,7 @@ const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen
             </p>
             <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
           </div>
-          <ChevronDown size={14} className="text-slate-500 hidden sm:block" />
+         
         </button>
       </div>
     </nav>

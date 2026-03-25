@@ -28,3 +28,22 @@ aside::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 2px;
 }
+
+@keyframes blink {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-toast {
+  animation: slideInRight 0.3s ease-out forwards;
+}
