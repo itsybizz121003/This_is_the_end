@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard'
 import ContactsPage from './components/ContactsPage'
 import TemplatesPage from './components/TemplatesPage'
 import CampaignsPage from './components/CampaignsPage'
+import ChatPage from './components/ChatPage'
 import './App.css'
 
 function App() {
@@ -63,6 +64,8 @@ function App() {
         return <TemplatesPage />
       case 'campaigns':
         return <CampaignsPage />
+      case 'chat':
+        return <ChatPage />
       default:
         return (
           <Dashboard 

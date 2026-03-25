@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import connectDB from './config/db.js';
 
 import contactRoutes from './routes/ContactRoutes.js';
@@ -10,6 +12,13 @@ import messageRoutes from './routes/MessageRoutes.js';
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: '*', // Adjust this in production
+    methods: ['GET', 'POST'],
+  },
+});
 
 // Connect MongoDB
 connectDB();
@@ -17,12 +26,27 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+// Socket.IO
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+// Export io to be used in controllers
+export { io };
+
 // Routes
 app.use('/api/contacts', contactRoutes);
 app.use('/api/templates', messageTemplateRoutes);
 app.use('/api/messages', messageRoutes);
 
+console.log('--- Routes Configured ---');
+console.log('Webhook GET (Verification): http://localhost:5000/api/messages/webhook');
+console.log('Webhook POST (Incoming):    http://localhost:5000/api/messages/webhook');
+
 app.get('/', (req, res) => res.send('WhatsApp Automation Backend Running'));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
