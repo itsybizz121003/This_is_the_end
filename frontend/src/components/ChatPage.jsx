@@ -280,15 +280,15 @@ const ChatPage = () => {
               <MessageSquare size={48} className="text-indigo-500" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">
-              WhatsApp Web AI
+              ITSYBIZZ AI
             </h2>
             <p className="text-slate-400 max-w-md">
               Select a contact to start messaging. Your messages are
               synchronized with WhatsApp in real-time.
             </p>
             <div className="mt-12 flex items-center gap-2 text-slate-600 text-sm">
-              <Clock size={14} />
-              <span>End-to-end encrypted</span>
+              {/* <Clock size={14} /> */}
+              {/* <span>End-to-end encrypted</span> */}
             </div>
           </div>
         )}
