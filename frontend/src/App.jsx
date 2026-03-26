@@ -7,7 +7,7 @@ import ContactsPage from './components/ContactsPage'
 import TemplatesPage from './components/TemplatesPage'
 import CampaignsPage from './components/CampaignsPage'
 import ChatPage from './components/ChatPage'
-import { NotificationProvider } from './context/NotificationContext'
+import { ChatProvider } from './context/ChatContext'
 import './App.css'
 
 function App() {
@@ -79,7 +79,7 @@ function App() {
   }
 
   return (
-    <NotificationProvider>
+    <ChatProvider>
       <div className="flex min-h-screen bg-[#07071a]">
         {/* Sidebar Overlay for Mobile */}
         {isSidebarOpen && window.innerWidth < 1024 && (
@@ -98,22 +98,20 @@ function App() {
         />
 
         {/* Main Content Area */}
-        <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen && window.innerWidth >= 1024 ? 'ml-64' : 'ml-0'}`}>
-          {/* Top Navbar */}
-          <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isSidebarOpen && window.innerWidth >= 1024 ? 'lg:ml-0' : ''}`}>
+          {/* Navbar */}
+          <Navbar 
+            activePage={activePage} 
+            onMenuClick={toggleSidebar}
+          />
 
-          {/* Dynamic Page Content */}
-          <main className="flex-1">
+          {/* Page Content */}
+          <div className="flex-1 overflow-hidden">
             {renderPage()}
-          </main>
-
-          {/* Footer */}
-          <footer className="py-4 px-8 text-center text-sm text-gray-500 border-t border-indigo-500/10 bg-[#07071a]">
-            &copy; {new Date().getFullYear()} Itsybizz Ai Automation. All rights reserved.
-          </footer>
-        </div>
+          </div>
+        </main>
       </div>
-    </NotificationProvider>
+    </ChatProvider>
   )
 }
 

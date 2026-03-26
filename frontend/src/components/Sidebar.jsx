@@ -1,11 +1,10 @@
 import React from "react";
-import { useNotifications } from "../context/NotificationContext";
+import { useChat } from "../context/ChatContext";
 import {
   LayoutDashboard,
   Users,
   MessageSquare,
   FileText,
-  Settings,
   LogOut,
   Send,
   Zap,
@@ -14,7 +13,7 @@ import {
 } from "lucide-react";
 
 const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
-  const { unreadCount } = useNotifications();
+  const { totalUnreadCount } = useChat();
   const menuItems = [
     {
       icon: <LayoutDashboard size={18} />,
@@ -26,11 +25,10 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
       icon: <MessageSquare size={18} />, 
       label: "Chat", 
       id: "chat",
-      showDot: unreadCount > 0 
+      unreadCount: totalUnreadCount 
     },
     { icon: <FileText size={18} />, label: "Templates", id: "templates" },
     { icon: <Send size={18} />, label: "Broadcast Campaign", id: "campaigns" },
-    // { icon: <Settings size={18} />, label: "Settings", id: "settings" },
   ];
 
   return (
@@ -46,8 +44,8 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
           </div>
           <div className={`${!isOpen && "lg:hidden"}`}>
             <p className="text-[15px] font-bold text-white tracking-tight leading-none">
-ITSYBIZZ AI            </p>
-           
+              ITSYBIZZ AI
+            </p>
           </div>
         </div>
         
@@ -88,8 +86,10 @@ ITSYBIZZ AI            </p>
                     >
                       {item.label}
                     </span>
-                    {item.showDot && (
-                      <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-blink" />
+                    {item.unreadCount > 0 && (
+                      <span className="bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center animate-blink">
+                        {item.unreadCount}
+                      </span>
                     )}
                   </div>
                   {isActive && (

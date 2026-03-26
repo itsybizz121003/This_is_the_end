@@ -39,6 +39,16 @@ aside::-webkit-scrollbar-thumb {
   animation: blink 1s infinite;
 }
 
+@keyframes chatHighlight {
+  0% { background-color: rgba(99, 102, 241, 0); }
+  50% { background-color: rgba(99, 102, 241, 0.2); }
+  100% { background-color: rgba(99, 102, 241, 0); }
+}
+
+.animate-chat-blink {
+  animation: chatHighlight 1.5s ease-in-out infinite;
+}
+
 @keyframes slideInRight {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }

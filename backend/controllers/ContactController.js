@@ -1,4 +1,5 @@
 import Contact from '../models/ContactModel.js';
+import Message from '../models/MessageModel.js';
 
 export const addContact = async (req, res) => {
   try {
@@ -20,8 +21,30 @@ export const addContact = async (req, res) => {
 
 export const getContacts = async (req, res) => {
   try {
-    const contacts = await Contact.find().sort({ createdAt: -1 });
-    res.status(200).json(contacts);
+    const contacts = await Contact.find();
+    
+    // For each contact, find the last message
+    const contactsWithLastMessage = await Promise.all(contacts.map(async (contact) => {
+      const lastMessage = await Message.findOne({ contact: contact._id })
+        .sort({ timestamp: -1 });
+      
+      return {
+        ...contact.toObject(),
+        lastMessage: lastMessage ? {
+          body: lastMessage.body,
+          timestamp: lastMessage.timestamp
+        } : null
+      };
+    }));
+
+    // Sort by last message timestamp (latest first)
+    contactsWithLastMessage.sort((a, b) => {
+      const timeA = a.lastMessage?.timestamp ? new Date(a.lastMessage.timestamp) : 0;
+      const timeB = b.lastMessage?.timestamp ? new Date(b.lastMessage.timestamp) : 0;
+      return timeB - timeA;
+    });
+
+    res.status(200).json(contactsWithLastMessage);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });

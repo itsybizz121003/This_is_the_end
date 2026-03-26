@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import { Bell, Search, ChevronDown, Sparkles, Menu } from "lucide-react";
-import { useNotifications } from "../context/NotificationContext";
+import { Bell, Menu } from "lucide-react";
+import { useChat } from "../context/ChatContext";
 
-const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen }) => {
+const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar }) => {
   const [notifOpen, setNotifOpen] = useState(false);
-  const { notifications, unreadCount, markAllAsRead, clearNotifications } = useNotifications();
+  const { notifications, totalUnreadCount: unreadCount, clearNotifications } = useChat();
 
   const handleToggleNotif = () => {
     setNotifOpen(!notifOpen);
-    if (!notifOpen) {
-      markAllAsRead();
-    }
   };
 
   return (
@@ -41,10 +38,6 @@ const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen
 
       {/* Right */}
       <div className="flex items-center gap-2 sm:gap-3">
-       
-       
-       
-
         {/* Notifications */}
         <div className="relative">
           <button
@@ -104,20 +97,6 @@ const Navbar = ({ pageTitle = "Dashboard Overview", toggleSidebar, isSidebarOpen
             </div>
           )}
         </div>
-
-        {/* Profile */}
-        <button className="flex items-center gap-2 sm:gap-2.5 sm:pl-3 sm:border-l sm:border-white/10">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shadow-[0_0_12px_rgba(99,102,241,0.3)]">
-            A
-          </div>
-          <div className="text-left hidden lg:block">
-            <p className="text-xs font-semibold text-slate-200 leading-none">
-              Admin
-            </p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
-          </div>
-         
-        </button>
       </div>
     </nav>
   );

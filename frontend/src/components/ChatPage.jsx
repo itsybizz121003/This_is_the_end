@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getContacts, getConversation, sendMessage } from '../services/api';
-import { useNotifications } from '../context/NotificationContext';
+import { getConversation, sendMessage } from '../services/api';
+import { useChat } from '../context/ChatContext';
 import { 
   Search, 
   MoreVertical, 
-  Paperclip, 
-  Smile, 
   Send, 
-  Phone, 
-  Video,
   User,
   Check,
   CheckCheck,
@@ -17,36 +13,54 @@ import {
 } from 'lucide-react';
 
 const ChatPage = () => {
-  const [contacts, setContacts] = useState([]);
-  const [selectedContact, setSelectedContact] = useState(null);
+  const { 
+    chats: contacts, 
+    selectedContact, 
+    setSelectedContact, 
+    socket, 
+    loading,
+    resetUnreadCount 
+  } = useChat();
+  
+  const selectedContactRef = useRef(null);
   const [messages, setMessages] = useState([]);
+
+  // Sync ref with state for socket listener
+  useEffect(() => {
+    selectedContactRef.current = selectedContact;
+    if (selectedContact) {
+      resetUnreadCount(selectedContact._id);
+    }
+  }, [selectedContact]);
+
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
-  const { socket } = useNotifications();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    fetchContacts();
+    if (!socket) return;
 
-    socket.on('new_message', (message) => {
-      // If the message is for the currently selected contact, add it to the list
-      if (selectedContact && (message.contact === selectedContact._id)) {
-        setMessages((prev) => [...prev, message]);
+    const handleNewMessage = (message) => {
+      // Update messages list ONLY if it's the current conversation
+      if (selectedContactRef.current && (message.contact === selectedContactRef.current._id)) {
+        setMessages((prev) => {
+          // Check for duplicate message ID to avoid double rendering
+          if (prev.some(m => m._id === message._id)) return prev;
+          return [...prev, message];
+        });
       }
-      
-      // Update contacts list to show latest message (optional but good for UX)
-      fetchContacts();
-    });
+    };
+
+    socket.on('new_message', handleNewMessage);
 
     return () => {
-      socket.off('new_message');
+      socket.off('new_message', handleNewMessage);
     };
-  }, [selectedContact]);
+  }, [socket]);
 
   useEffect(() => {
     if (selectedContact) {
@@ -57,16 +71,6 @@ const ChatPage = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const fetchContacts = async () => {
-    try {
-      const { data } = await getContacts();
-      setContacts(data);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching contacts:', err);
-    }
-  };
 
   const fetchConversation = async (contactId) => {
     try {
@@ -149,7 +153,9 @@ const ChatPage = () => {
               <div
                 key={contact._id}
                 onClick={() => setSelectedContact(contact)}
-                className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-white/5 transition-colors ${selectedContact?._id === contact._id ? "bg-indigo-500/10" : ""}`}
+                className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-white/5 transition-all duration-300 relative ${
+                  selectedContact?._id === contact._id ? "bg-indigo-500/10 border-l-4 border-indigo-500" : "border-l-4 border-transparent"
+                } ${contact.isBlinking ? "animate-chat-blink" : ""}`}
               >
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center shrink-0">
                   <span className="text-indigo-400 font-bold">
@@ -158,16 +164,25 @@ const ChatPage = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline">
-                    <h3 className="text-slate-200 font-medium truncate">
+                    <h3 className={`text-slate-200 font-medium truncate ${contact.unreadCount > 0 ? "font-bold" : ""}`}>
                       {contact.name}
                     </h3>
                     <span className="text-[10px] text-slate-500 uppercase tracking-wider">
-                      {contact.phone}
+                      {contact.lastMessage?.timestamp 
+                        ? new Date(contact.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : contact.phone}
                     </span>
                   </div>
-                  <p className="text-slate-500 text-xs truncate mt-0.5">
-                    Click to start chatting...
-                  </p>
+                  <div className="flex justify-between items-center mt-0.5">
+                    <p className={`text-xs truncate flex-1 ${contact.unreadCount > 0 ? "text-slate-200 font-medium" : "text-slate-500"}`}>
+                      {contact.lastMessage?.body || "Click to start chatting..."}
+                    </p>
+                    {contact.unreadCount > 0 && (
+                      <span className="ml-2 bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                        {contact.unreadCount}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))
