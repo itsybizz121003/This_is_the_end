@@ -125,9 +125,9 @@ const TemplatesPage = () => {
                   <Clock size={12} />
                   Updated {new Date(template.updatedAt).toLocaleDateString()}
                 </div>
-                <button className="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
+                {/* <button className="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
                   View Full Details
-                </button>
+                </button> */}
               </div>
 
               {/* Glow Effect */}
