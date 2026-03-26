@@ -23,6 +23,7 @@ const ChatPage = () => {
   } = useChat();
   
   const selectedContactRef = useRef(null);
+  const processedMessagesRef = useRef(new Set());
   const [messages, setMessages] = useState([]);
 
   // Sync ref with state for socket listener
@@ -47,8 +48,17 @@ const ChatPage = () => {
     const handleNewMessage = (message) => {
       // Update messages list ONLY if it's the current conversation
       if (selectedContactRef.current && (message.contact === selectedContactRef.current._id)) {
+        // Strict deduplication check
+        if (message._id && processedMessagesRef.current.has(message._id)) {
+          return;
+        }
+        
+        if (message._id) {
+          processedMessagesRef.current.add(message._id);
+        }
+
         setMessages((prev) => {
-          // Check for duplicate message ID to avoid double rendering
+          // Double check for duplicate message ID to avoid double rendering
           if (prev.some(m => m._id === message._id)) return prev;
           return [...prev, message];
         });

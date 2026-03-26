@@ -15,6 +15,7 @@ export const ChatProvider = ({ children }) => {
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [toasts, setToasts] = useState([]);
+  const processedMessagesRef = useRef(new Set());
 
   // Sync ref with selectedContact state for socket listener access
   useEffect(() => {
@@ -74,6 +75,16 @@ export const ChatProvider = ({ children }) => {
     const handleNewMessage = (message) => {
       console.log('Global new message received:', message);
       
+      // Strict deduplication check at the very beginning
+      if (message._id && processedMessagesRef.current.has(message._id)) {
+        console.log('Skipping already processed message:', message._id);
+        return;
+      }
+      
+      if (message._id) {
+        processedMessagesRef.current.add(message._id);
+      }
+
       setChats(prevChats => {
         const contactIdx = prevChats.findIndex(c => c._id === message.contact);
         if (contactIdx === -1) return prevChats;
@@ -92,39 +103,55 @@ export const ChatProvider = ({ children }) => {
           if (!isCurrentChat) {
             chat.unreadCount = (chat.unreadCount || 0) + 1;
             chat.isBlinking = true;
-            setTotalUnreadCount(prev => prev + 1);
-
-            // Add to notifications
-            const contactInfo = chat.name || chat.phone || 'Unknown';
-            const newNotif = {
-              id: Date.now(),
-              text: `${contactInfo}: ${message.body}`,
-              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              dot: 'bg-indigo-400',
-              messageId: message._id,
-              timestamp: new Date()
-            };
-            setNotifications(prev => [newNotif, ...prev].slice(0, 10));
-
-            // Add toast
-            const toastId = Date.now();
-            setToasts(prev => [...prev, { id: toastId, text: newNotif.text }]);
-            setTimeout(() => {
-              setToasts(prev => prev.filter(t => t.id !== toastId));
-            }, 5000);
-
-            // Stop blinking after 5 seconds
-            setTimeout(() => {
-              setChats(curr => curr.map(c => 
-                c._id === message.contact ? { ...c, isBlinking: false } : c
-              ));
-            }, 5000);
           }
         }
 
         updatedChats.splice(contactIdx, 1);
         return [chat, ...updatedChats];
       });
+
+      // Side effects handled outside setChats to prevent duplication in StrictMode
+      if (message.direction === 'incoming') {
+        const isCurrentChat = selectedContactRef.current && selectedContactRef.current._id === message.contact;
+        
+        if (!isCurrentChat) {
+          setTotalUnreadCount(prev => prev + 1);
+
+          setNotifications(prev => {
+            const newNotif = {
+              id: Date.now(),
+              text: `${message.contactName || 'New Message'}: ${message.body}`,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              dot: 'bg-indigo-400',
+              messageId: message._id,
+              timestamp: new Date()
+            };
+            return [newNotif, ...prev].slice(0, 10);
+          });
+
+          setToasts(prev => {
+            const toastId = Date.now();
+            const newToast = { 
+              id: toastId, 
+              messageId: message._id,
+              text: `${message.contactName || 'New Message'}: ${message.body}` 
+            };
+            
+            setTimeout(() => {
+              setToasts(curr => curr.filter(t => t.id !== toastId));
+            }, 5000);
+
+            return [...prev, newToast];
+          });
+
+          // Stop blinking after 5 seconds
+          setTimeout(() => {
+            setChats(curr => curr.map(c => 
+              c._id === message.contact ? { ...c, isBlinking: false } : c
+            ));
+          }, 5000);
+        }
+      }
     };
 
     socket.on('new_message', handleNewMessage);
