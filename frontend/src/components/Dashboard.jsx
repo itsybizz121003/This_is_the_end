@@ -136,7 +136,7 @@ const Dashboard = ({ setActivePage }) => {
     // Templates
     setTLoading(true);
     getTemplates()
-      .then(res => setTemplates(res.data || []))
+      .then(res => setTemplates(res?.data || []))
       .catch(() => {}) // silently fail
       .finally(() => setTLoading(false));
   }, []);
@@ -203,7 +203,7 @@ const Dashboard = ({ setActivePage }) => {
     },
     {
       title: "Templates",
-      value: tLoading ? "..." : templates.length.toLocaleString(),
+      value: tLoading ? "..." : templates?.length?.toLocaleString(),
       icon: <Zap size={20} className="text-white" />,
       trend: "up", trendValue: "Ready",
       gradient: "from-amber-500 to-orange-500", glow: "bg-amber-500",

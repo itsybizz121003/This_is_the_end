@@ -8,6 +8,7 @@ import connectDB from './config/db.js';
 import contactRoutes from './routes/ContactRoutes.js';
 import messageTemplateRoutes from './routes/MessageTemplateRoutes.js';
 import messageRoutes from './routes/MessageRoutes.js';
+import { getMetaTemplates, createMetaTemplate } from './controllers/MessageTemplateController.js';
 
 dotenv.config();
 
@@ -42,9 +43,13 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/templates', messageTemplateRoutes);
 app.use('/api/messages', messageRoutes);
 
-console.log('--- Routes Configured ---');
-console.log('Webhook GET (Verification): http://localhost:5000/api/messages/webhook');
-console.log('Webhook POST (Incoming):    http://localhost:5000/api/messages/webhook');
+// Direct Meta API Routes (for frontend compatibility)
+app.get('/api/get-templates', getMetaTemplates);
+app.post('/api/create-template', createMetaTemplate);
+
+// console.log('--- Routes Configured ---');
+// console.log('Webhook GET (Verification): http://localhost:5000/api/messages/webhook');
+// console.log('Webhook POST (Incoming):    http://localhost:5000/api/messages/webhook');
 
 app.get('/', (req, res) => res.send('WhatsApp Automation Backend Running'));
 

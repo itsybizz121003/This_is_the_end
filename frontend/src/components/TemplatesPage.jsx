@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { getTemplates, addTemplate, deleteTemplate } from '../services/api';
 import { FileText, Plus, Trash2, Search, MessageSquare, Zap, Clock } from 'lucide-react';
+import CreateTemplateForm from './CreateTemplateForm';
 
 const TemplatesPage = () => {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newTemplate, setNewTemplate] = useState({ name: '', category: 'UTILITY', language: 'en_US', components: [] });
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const fetchTemplates = async () => {
     try {
       setLoading(true);
       const { data } = await getTemplates();
-      setTemplates(data);
+      setTemplates(data || []);
     } catch (err) {
       console.error('Error fetching templates:', err);
+      setTemplates([]);
     } finally {
       setLoading(false);
     }
@@ -26,7 +28,7 @@ const TemplatesPage = () => {
   }, []);
 
   const handleDeleteTemplate = async (id) => {
-    if (window.confirm('Kya aap is template ko delete karna chahte hain?')) {
+    if (window.confirm('Are you sure you want to delete this template?')) {
       try {
         await deleteTemplate(id);
         fetchTemplates();
@@ -41,20 +43,42 @@ const TemplatesPage = () => {
     t.category?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const getStatusColor = (status) => {
+    switch (status?.toUpperCase()) {
+      case 'APPROVED':
+        return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20';
+      case 'PENDING':
+        return 'bg-amber-500/15 text-amber-400 border-amber-500/20';
+      case 'REJECTED':
+        return 'bg-red-500/15 text-red-400 border-red-500/20';
+      default:
+        return 'bg-slate-500/15 text-slate-400 border-slate-500/20';
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 text-white">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold">Message Templates</h2>
-          <p className="text-slate-400 text-sm mt-1">WhatsApp templates yahan se manage karein.</p>
+          <p className="text-slate-400 text-sm mt-1">Manage your WhatsApp message templates</p>
         </div>
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)]"
-        >
-          <Plus size={18} />
-          Sync from Meta
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => setShowCreateForm(true)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+          >
+            <Plus size={18} />
+            Create Template
+          </button>
+          {/* <button 
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+          >
+            <Plus size={18} />
+            Sync from Meta
+          </button> */}
+        </div>
       </div>
 
       {/* Search & Stats */}
@@ -79,7 +103,7 @@ const TemplatesPage = () => {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-500">Templates fetch ho rahe hain...</p>
+          <p className="text-slate-500">Templates Loading...</p>
         </div>
       ) : filteredTemplates.length === 0 ? (
         <div className="bg-[#0d0d2b] rounded-2xl border border-indigo-500/10 p-12 text-center text-slate-500">
@@ -88,18 +112,18 @@ const TemplatesPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredTemplates.map((template) => (
-            <div key={template._id} className="bg-[#0d0d2b] border border-indigo-500/10 rounded-2xl p-6 group hover:border-indigo-500/30 transition-all duration-300 relative overflow-hidden">
+            <div key={template.name} className="bg-[#0d0d2b] border border-indigo-500/10 rounded-2xl p-6 group hover:border-indigo-500/30 transition-all duration-300 relative overflow-hidden">
               {/* Header */}
               <div className="flex justify-between items-start mb-4">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                   <FileText size={20} className="text-white" />
                 </div>
                 <div className="flex gap-2">
-                  <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase ${template.status === 'APPROVED' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/15 text-amber-400 border border-amber-500/20'}`}>
-                    {template.status || 'APPROVED'}
+                  <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase ${getStatusColor(template.status)}`}>
+                    {template.status || 'UNKNOWN'}
                   </span>
                   <button 
-                    onClick={() => handleDeleteTemplate(template._id)}
+                    onClick={() => handleDeleteTemplate(template.name)}
                     className="p-1.5 text-slate-500 hover:text-red-400 transition-colors"
                   >
                     <Trash2 size={14} />
@@ -123,11 +147,8 @@ const TemplatesPage = () => {
               <div className="flex items-center justify-between pt-4 border-t border-indigo-500/5 mt-auto">
                 <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
                   <Clock size={12} />
-                  Updated {new Date(template.updatedAt).toLocaleDateString()}
+                  Template ID: {template.name}
                 </div>
-                {/* <button className="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
-                  View Full Details
-                </button> */}
               </div>
 
               {/* Glow Effect */}
@@ -135,6 +156,17 @@ const TemplatesPage = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Create Template Form Modal */}
+      {showCreateForm && (
+        <CreateTemplateForm
+          onClose={() => setShowCreateForm(false)}
+          onSuccess={() => {
+            setShowCreateForm(false);
+            fetchTemplates();
+          }}
+        />
       )}
     </div>
   );

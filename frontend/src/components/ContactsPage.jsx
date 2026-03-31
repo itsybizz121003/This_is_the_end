@@ -82,7 +82,7 @@ const ContactsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold">Contacts Management</h2>
-          <p className="text-slate-400 text-sm mt-1">Apne contacts ko yahan manage karein.</p>
+          <p className="text-slate-400 text-sm mt-1">Manage your contacts here</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}

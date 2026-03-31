@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
 });
 
 // Contact APIs
@@ -11,7 +11,8 @@ export const updateContact = (id, data) => API.put(`/contacts/${id}`, data);
 export const deleteContact = (id) => API.delete(`/contacts/${id}`);
 
 // Message Template APIs
-export const getTemplates = () => API.get('/templates');
+export const getTemplates = () => API.get('/get-templates');
+export const createTemplate = (data) => API.post('/create-template', data);
 export const addTemplate = (data) => API.post('/templates', data);
 export const updateTemplate = (id, data) => API.put(`/templates/${id}`, data);
 export const deleteTemplate = (id) => API.delete(`/templates/${id}`);
