@@ -108,12 +108,14 @@ const Dashboard = ({ setActivePage }) => {
 
   // Error state
   const [error, setError] = useState('');
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // campaignStats from localStorage (tumhara existing CampaignsPage save karta hai)
   const [campaignStats, setCampaignStats] = useState({ totalSent: 0, totalFailed: 0 });
 
   const fetchAll = useCallback(async () => {
     setError('');
+    setLastUpdated(new Date());
 
     // Contacts
     setCLoading(true);
@@ -160,6 +162,43 @@ const Dashboard = ({ setActivePage }) => {
   const total       = totalSent + totalFailed;
   const successRate = total > 0 ? ((totalSent / total) * 100).toFixed(1) : '0.0';
 
+  // --- Dynamic Trends Calculation ---
+  const getTrends = () => {
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+    // Contacts trend
+    const newContactsThisWeek = contacts.filter(c => new Date(c.createdAt) > oneWeekAgo).length;
+    const contactsTrend = contacts.length > 0 
+      ? ((newContactsThisWeek / (contacts.length || 1)) * 100).toFixed(1)
+      : 0;
+
+    // Messages trend
+    const messagesThisWeek = outgoing.filter(m => new Date(m.timestamp || m.createdAt) > oneWeekAgo).length;
+    const messagesLastWeek = outgoing.filter(m => {
+      const d = new Date(m.timestamp || m.createdAt);
+      return d <= oneWeekAgo && d > twoWeeksAgo;
+    }).length;
+    
+    let msgTrendValue = 0;
+    let msgTrendDir = "up";
+    if (messagesLastWeek > 0) {
+      msgTrendValue = (((messagesThisWeek - messagesLastWeek) / messagesLastWeek) * 100).toFixed(1);
+      msgTrendDir = msgTrendValue >= 0 ? "up" : "down";
+    } else {
+      msgTrendValue = messagesThisWeek > 0 ? 100 : 0;
+      msgTrendDir = "up";
+    }
+
+    return {
+      contacts: { value: `+${newContactsThisWeek}`, trend: "up" },
+      messages: { value: `${Math.abs(msgTrendValue)}%`, trend: msgTrendDir },
+    };
+  };
+
+  const trends = getTrends();
+
   const weeklyData  = buildWeeklyData(messages);
   const monthlyData = buildMonthlyData(messages);
 
@@ -169,10 +208,10 @@ const Dashboard = ({ setActivePage }) => {
     { name: "Replied",   value: Math.round(((outgoing.filter(m => m.replied).length) / totalSent) * 100), color: "#a78bfa" },
     { name: "Failed",    value: Math.round((failed.length    / totalSent) * 100), color: "#1e1b4b" },
   ] : [
-    { name: "Delivered", value: 72, color: "#6366f1" },
-    { name: "Read",      value: 18, color: "#8b5cf6" },
-    { name: "Replied",   value: 7,  color: "#a78bfa" },
-    { name: "Failed",    value: 3,  color: "#1e1b4b" },
+    { name: "Delivered", value: 0, color: "#6366f1" },
+    { name: "Read",      value: 0, color: "#8b5cf6" },
+    { name: "Replied",   value: 0, color: "#a78bfa" },
+    { name: "Failed",    value: 0, color: "#1e1b4b" },
   ];
 
   const statsCards = [
@@ -180,7 +219,8 @@ const Dashboard = ({ setActivePage }) => {
       title: "Total Contacts",
       value: cLoading ? "..." : contacts.length.toLocaleString(),
       icon: <Users size={20} className="text-white" />,
-      trend: "up", trendValue: `${contacts.length} total`,
+      trend: trends.contacts.trend, 
+      trendValue: `${trends.contacts.value} this week`,
       gradient: "from-indigo-500 to-violet-600", glow: "bg-indigo-500",
       loading: cLoading,
     },
@@ -188,7 +228,8 @@ const Dashboard = ({ setActivePage }) => {
       title: "Messages Sent",
       value: mLoading ? "..." : totalSent.toLocaleString(),
       icon: <MessageCircle size={20} className="text-white" />,
-      trend: "up", trendValue: "Total",
+      trend: trends.messages.trend, 
+      trendValue: `${trends.messages.value} vs last week`,
       gradient: "from-emerald-500 to-teal-600", glow: "bg-emerald-500",
       loading: mLoading,
     },
@@ -196,8 +237,8 @@ const Dashboard = ({ setActivePage }) => {
       title: "Success Rate",
       value: mLoading ? "..." : `${successRate}%`,
       icon: <CheckCircle size={20} className="text-white" />,
-      trend: Number(successRate) >= 50 ? "up" : "down",
-      trendValue: `${successRate}%`,
+      trend: Number(successRate) >= 90 ? "up" : "down",
+      trendValue: Number(successRate) >= 90 ? "Excellent" : "Needs work",
       gradient: "from-violet-500 to-purple-600", glow: "bg-violet-500",
       loading: mLoading,
     },
@@ -205,7 +246,8 @@ const Dashboard = ({ setActivePage }) => {
       title: "Templates",
       value: tLoading ? "..." : templates.length.toLocaleString(),
       icon: <Zap size={20} className="text-white" />,
-      trend: "up", trendValue: "Ready",
+      trend: "up", 
+      trendValue: `${templates.filter(t => t.status === 'approved').length} approved`,
       gradient: "from-amber-500 to-orange-500", glow: "bg-amber-500",
       loading: tLoading,
     },
@@ -277,6 +319,22 @@ const Dashboard = ({ setActivePage }) => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Dashboard Overview</h2>
+          <p className="text-slate-400 text-sm mt-1">Real-time performance and system metrics</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-right hidden sm:block">
+            <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Last Sync</p>
+            <p className="text-xs text-indigo-400 font-medium">{lastUpdated.toLocaleTimeString()}</p>
+          </div>
+          <button onClick={fetchAll} 
+            className="p-2.5 bg-[#0d0d2b] border border-indigo-500/20 rounded-xl text-indigo-400 hover:bg-indigo-500/10 transition-all group">
+            <RefreshCw size={18} className={cLoading || mLoading || tLoading ? "animate-spin" : "group-hover:rotate-180 transition-all duration-500"} />
+          </button>
+        </div>
+      </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
@@ -542,7 +600,7 @@ const Dashboard = ({ setActivePage }) => {
                 { label: "Send Campaign", icon: <Send size={15} />,      gradient: "from-indigo-600 to-violet-600",  glow: "shadow-[0_0_20px_rgba(99,102,241,0.3)]",  id: "campaigns"  },
                 { label: "Add Contact",  icon: <Users size={15} />,      gradient: "from-emerald-600 to-teal-600",   glow: "shadow-[0_0_20px_rgba(16,185,129,0.3)]",  id: "contacts"   },
                 { label: "New Template", icon: <Zap size={15} />,        gradient: "from-amber-500 to-orange-500",   glow: "shadow-[0_0_20px_rgba(245,158,11,0.3)]",  id: "templates"  },
-                { label: "View Reports", icon: <TrendingUp size={15} />, gradient: "from-violet-600 to-purple-600",  glow: "shadow-[0_0_20px_rgba(139,92,246,0.3)]",  id: "dashboard"  },
+                { label: "Open Chat",    icon: <MessageCircle size={15} />, gradient: "from-violet-600 to-purple-600",  glow: "shadow-[0_0_20px_rgba(139,92,246,0.3)]",  id: "chat"  },
               ].map((a, i) => (
                 <button key={i} onClick={() => setActivePage?.(a.id)}
                   className={`flex flex-col items-center gap-2 p-3.5 bg-gradient-to-br ${a.gradient} rounded-xl ${a.glow} hover:scale-105 transition-all duration-200 text-white`}>
