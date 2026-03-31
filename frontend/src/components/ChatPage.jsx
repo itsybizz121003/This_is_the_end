@@ -164,7 +164,9 @@ const ChatPage = () => {
                 key={contact._id}
                 onClick={() => setSelectedContact(contact)}
                 className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-white/5 transition-all duration-300 relative ${
-                  selectedContact?._id === contact._id ? "bg-indigo-500/10 border-l-4 border-indigo-500" : "border-l-4 border-transparent"
+                  selectedContact?._id === contact._id
+                    ? "bg-indigo-500/10 border-l-4 border-indigo-500"
+                    : "border-l-4 border-transparent"
                 } ${contact.isBlinking ? "animate-chat-blink" : ""}`}
               >
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center shrink-0">
@@ -174,18 +176,28 @@ const ChatPage = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline">
-                    <h3 className={`text-slate-200 font-medium truncate ${contact.unreadCount > 0 ? "font-bold" : ""}`}>
+                    <h3
+                      className={`text-slate-200 font-medium truncate ${contact.unreadCount > 0 ? "font-bold" : ""}`}
+                    >
                       {contact.name}
                     </h3>
                     <span className="text-[10px] text-slate-500 uppercase tracking-wider">
-                      {contact.lastMessage?.timestamp 
-                        ? new Date(contact.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      {contact.lastMessage?.timestamp
+                        ? new Date(
+                            contact.lastMessage.timestamp,
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
                         : contact.phone}
                     </span>
                   </div>
                   <div className="flex justify-between items-center mt-0.5">
-                    <p className={`text-xs truncate flex-1 ${contact.unreadCount > 0 ? "text-slate-200 font-medium" : "text-slate-500"}`}>
-                      {contact.lastMessage?.body || "Click to start chatting..."}
+                    <p
+                      className={`text-xs truncate flex-1 ${contact.unreadCount > 0 ? "text-slate-200 font-medium" : "text-slate-500"}`}
+                    >
+                      {contact.lastMessage?.body ||
+                        "Click to start chatting..."}
                     </p>
                     {contact.unreadCount > 0 && (
                       <span className="ml-2 bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
@@ -221,12 +233,11 @@ const ChatPage = () => {
                   </span>
                 </div>
               </div>
-             
             </div>
 
             {/* Messages Area */}
             <div
-              className="flex-1 overflow-y-auto p-6 space-y-4 
+              className="flex-1 custom-scroll  p-6 space-y-4 
   bg-[url('https://wallpapers.com/images/featured/dark-mode-nuyvgvwzb8ztc2zu.jpg')] 
   bg-[length:100%] bg-no-repeat bg-center"
             >
@@ -304,9 +315,7 @@ const ChatPage = () => {
             <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
               <MessageSquare size={48} className="text-indigo-500" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">
-              ITSYBIZZ AI
-            </h2>
+            <h2 className="text-2xl font-bold text-white mb-2">ITSYBIZZ AI</h2>
             <p className="text-slate-400 max-w-md">
               Select a contact to start messaging. Your messages are
               synchronized with WhatsApp in real-time.

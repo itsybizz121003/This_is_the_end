@@ -15,7 +15,7 @@ const CampaignsPage = () => {
   totalSent: 0,
   totalFailed: 0,
 });
-
+  console.log("templates", templates);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -118,7 +118,7 @@ localStorage.setItem("campaignStats", JSON.stringify({
           <Send className="text-indigo-500" />
           Create Broadcast Campaign
         </h2>
-        <p className="text-slate-400 mt-1">Ek saath sabhi ya select kiye gaye contacts ko message bhejein.</p>
+        <p className="text-slate-400 mt-1">Create and send broadcast campaigns to your contacts</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -130,15 +130,15 @@ localStorage.setItem("campaignStats", JSON.stringify({
               1. Select Template
             </h3>
             <div className="space-y-3">
-              {templates.length === 0 ? (
+              {templates?.length === 0 ? (
                 <p className="text-xs text-amber-400 bg-amber-400/10 p-3 rounded-xl border border-amber-400/20">
                   Koi templates nahi mile. Pehle Meta se sync karein.
                 </p>
               ) : (
-                templates.map(t => (
+                templates?.map(t => (
                   <button
                     key={t._id}
-                    onClick={() => setSelectedTemplate(t.name)}
+                    onClick={() => setSelectedTemplate(t?.name)}
                     className={`w-full text-left p-4 rounded-xl border transition-all ${selectedTemplate === t.name ? 'bg-indigo-500/10 border-indigo-500 text-indigo-200' : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10'}`}
                   >
                     <p className="font-bold text-sm">{t.name}</p>
@@ -150,7 +150,7 @@ localStorage.setItem("campaignStats", JSON.stringify({
           </div>
 
           {/* Campaign Summary & Action */}
-          <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl p-6 shadow-xl">
+          <div className="bg-[#0d0d2b] rounded-2xl p-6 shadow-xl">
             <h3 className="font-bold mb-4">Campaign Summary</h3>
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">

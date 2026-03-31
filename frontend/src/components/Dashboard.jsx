@@ -138,7 +138,7 @@ const Dashboard = ({ setActivePage }) => {
     // Templates
     setTLoading(true);
     getTemplates()
-      .then(res => setTemplates(res.data || []))
+      .then(res => setTemplates(res?.data || []))
       .catch(() => {}) // silently fail
       .finally(() => setTLoading(false));
   }, []);
@@ -244,7 +244,7 @@ const Dashboard = ({ setActivePage }) => {
     },
     {
       title: "Templates",
-      value: tLoading ? "..." : templates.length.toLocaleString(),
+      value: tLoading ? "..." : templates?.length?.toLocaleString(),
       icon: <Zap size={20} className="text-white" />,
       trend: "up", 
       trendValue: `${templates.filter(t => t.status === 'approved').length} approved`,

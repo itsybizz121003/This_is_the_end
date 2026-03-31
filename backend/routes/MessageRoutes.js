@@ -1,6 +1,6 @@
 import express from 'express';
 import { 
-  sendTemplateMessage, handleWebhook, verifyWebhook, getConversation, sendMessage, getAllMessages
+  sendTemplateMessage, handleWebhook, verifyWebhook, getConversation, sendMessage, getAllMessages, testWhatsAppConnection
 } from '../controllers/MessageController.js';
 
 const router = express.Router();
@@ -22,5 +22,8 @@ router.post('/webhook', handleWebhook);
 
 // Get conversation by contactId
 router.get('/:contactId', getConversation);
+
+// Test WhatsApp connection
+router.get('/test-connection', testWhatsAppConnection);
 
 export default router;
